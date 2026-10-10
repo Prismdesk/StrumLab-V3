@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>StrumLab</title>
+<meta name="theme-color" content="#0f9e8e">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<main id="views">
+  <section id="tab-chords" class="view" data-title="Chord Library">
+    <div class="head"><h1>Chord Library</h1><div class="capo-slot"></div></div>
+    <div id="chord-roots" class="chips" aria-label="Root note"></div>
+    <div id="chord-types" class="chips" aria-label="Chord type"></div>
+    <p class="hint" id="chord-note" hidden>Chord shapes here are for standard tuning, so they play in standard. The labs and the Scale Library follow your tuning.</p>
+    <div id="chord-list" class="cards"></div>
+  </section>
+  <section id="tab-scales" class="view" data-title="Scale Library" hidden>
+    <div class="head"><h1>Scale Library</h1><div class="capo-slot"></div></div>
+    <div id="scale-roots" class="chips" aria-label="Root note"></div>
+    <select id="scale-select" aria-label="Scale"></select>
+    <p class="hint" id="scale-formula"></p>
+    <div id="scale-notes" class="chips"></div>
+    <div class="row"><button class="primary" id="play-up">Play scale</button><button class="primary alt" id="play-updown">Up and down</button></div>
+    <div class="fb" id="fretboard-wrap"><div id="fretboard"></div></div>
+    <p class="hint">Tap any note on the fretboard to hear it.</p>
+  </section>
+  <section id="tab-chordlab" class="view" data-title="Chord Lab" hidden>
+    <div class="head"><h1>Chord Lab</h1><div class="capo-slot"></div></div>
+    <div class="result"><div id="lab-name" class="big">Tap frets to build a chord</div><div id="lab-notes" class="hint"></div></div>
+    <div class="fb" id="lab-wrap"><div id="lab-board"></div></div>
+    <div id="lab-legend" class="legend"></div>
+    <p class="hint">Tap a fret to place a note, tap it again to mute. Tap the left column to switch a string between open and muted. Scroll sideways for higher frets.</p>
+    <div class="row"><button class="primary" id="lab-strum">Strum</button><button class="primary alt" id="lab-arp">Arpeggio</button></div>
+    <div class="group">
+      <h2>Save chord</h2>
+      <input id="lab-name-input" type="text" maxlength="24" placeholder="Name (optional)" aria-label="Chord name">
+      <div class="row"><button class="primary" id="lab-save">Save as new</button><button class="primary alt" id="lab-update" hidden>Update</button><button class="primary alt" id="lab-clear">Clear</button></div>
+    </div>
+    <h2 class="sec">Saved chords</h2>
+    <p class="hint" id="lab-empty">Nothing saved yet.</p>
+    <div id="lab-saved" class="cards"></div>
+  </section>
+  <section id="tab-scalelab" class="view" data-title="Scale Lab" hidden>
+    <div class="head"><h1>Scale Lab</h1><div class="capo-slot"></div></div>
+    <div class="result"><div id="sl-name" class="big">Tap frets to select notes</div><div id="sl-notes" class="hint"></div><div id="sl-fits" class="hint"></div></div>
+    <div class="fb" id="sl-wrap"><div id="sl-board"></div></div>
+    <div id="sl-legend" class="legend"></div>
+    <p class="hint">Tap frets to add notes, tap again to remove. You can pick several notes on a string. Dotted rings show the same notes elsewhere on the neck.</p>
+    <div class="row"><button class="primary" id="sl-play">Play notes</button><button class="primary alt" id="sl-updown">Up and down</button></div>
+    <div class="group">
+      <h2>Save scale</h2>
+      <input id="sl-name-input" type="text" maxlength="28" placeholder="Name (optional)" aria-label="Scale name">
+      <div class="row"><button class="primary" id="sl-save">Save as new</button><button class="primary alt" id="sl-update" hidden>Update</button><button class="primary alt" id="sl-clear">Clear</button></div>
+    </div>
+    <h2 class="sec">Saved scales</h2>
+    <p class="hint" id="sl-empty">Nothing saved yet.</p>
+    <div id="sl-saved" class="list"></div>
+  </section>
+  <section id="tab-settings" class="view" data-title="Settings" hidden>
+    <h1>Settings</h1>
+
+    <div class="group">
+      <h2>Theme</h2>
+      <div class="seg" data-setting="theme">
+        <button data-value="system">System</button>
+        <button data-value="light">Light</button>
+        <button data-value="dark">Dark</button>
+      </div>
+    </div>
+
+    <div class="group">
+      <h2>Display size</h2>
+      <div class="seg" data-setting="size">
+        <button data-value="small">Small</button>
+        <button data-value="medium">Medium</button>
+        <button data-value="large">Large</button>
+      </div>
+    </div>
+
+    <div class="group">
+      <h2>Guitar type</h2>
+      <div class="seg" data-setting="guitar">
+        <button data-value="acoustic">Acoustic</button>
+        <button data-value="electric">Electric</button>
+      </div>
+    </div>
+
+    <div class="group">
+      <h2>Tuning</h2>
+      <select id="tuning-select" aria-label="Tuning"></select>
+      <div id="custom-tuning" class="tuning" hidden></div>
+      <p class="hint">The labs and the Scale Library follow this tuning. The Chord Library stays in standard tuning.</p>
+    </div>
+
+    <div class="group">
+      <h2>Effects</h2>
+      <div class="fxrow"><span>Reverb</span><div class="seg" data-setting="reverb"><button data-value="off">Off</button><button data-value="low">Low</button><button data-value="med">Med</button><button data-value="high">High</button></div></div>
+      <div class="fxrow"><span>Chorus</span><div class="seg" data-setting="chorus"><button data-value="off">Off</button><button data-value="low">Low</button><button data-value="med">Med</button><button data-value="high">High</button></div></div>
+      <div class="fxrow"><span>Compressor</span><div class="seg" data-setting="compressor"><button data-value="off">Off</button><button data-value="low">Low</button><button data-value="med">Med</button><button data-value="high">High</button></div></div>
+    </div>
+
+    <div class="group">
+      <h2>Note colors</h2>
+      <div class="seg" data-setting="noteColor">
+        <button data-value="note">By note</button>
+        <button data-value="role">By role</button>
+        <button data-value="string">By string</button>
+      </div>
+    </div>
+
+    <div class="group">
+      <h2>Frets shown in labs</h2>
+      <div class="seg" data-setting="frets">
+        <button data-value="5">5</button>
+        <button data-value="6">6</button>
+        <button data-value="8">8</button>
+        <button data-value="12">12</button>
+      </div>
+      <p class="hint">You can always scroll sideways for more.</p>
+    </div>
+
+    <div class="group">
+      <h2>Diagram style</h2>
+      <div class="seg" data-setting="diagram">
+        <button data-value="vertical">Vertical box</button>
+        <button data-value="horizontal">Horizontal</button>
+      </div>
+      <p class="hint">Applies to chord diagrams. The labs always use the horizontal fretboard.</p>
+    </div>
+
+    <div class="group">
+      <h2>Sound check</h2>
+      <p class="hint">Tap a string to hear it, or strum all six.</p>
+      <div class="strings" id="strings"></div>
+      <button class="primary" id="strum-test">Strum open strings</button>
+      <p class="hint" id="audio-note">On iPhone and iPad, turn off the silent switch to hear sound.</p>
+    </div>
+
+    <div class="group">
+      <h2>Backup</h2>
+      <p class="hint">Save your chords, scales and settings to a file, or restore them from one.</p>
+      <div class="row"><button class="primary" id="export-btn">Export</button><button class="primary alt" id="import-btn">Import</button></div>
+      <input type="file" id="import-file" accept=".json,application/json" hidden>
+      <p class="status" id="backup-status" role="status"></p>
+    </div>
+
+    <div class="group">
+      <h2>Offline</h2>
+      <p id="offline-status" class="status">Checking…</p>
+    </div>
+  </section>
+</main>
+
+<nav id="tabbar" aria-label="Main">
+  <button data-tab="chords" aria-label="Chord Library" class="active">
+    <svg viewBox="0 0 24 24"><path d="M5 4v16M10 4v16M15 4v16M20 4v16M5 9h15M5 15h15"/></svg><span>Chords</span>
+  </button>
+  <button data-tab="scales" aria-label="Scale Library">
+    <svg viewBox="0 0 24 24"><path d="M3 20h5v-4h5v-4h5V8h3"/></svg><span>Scales</span>
+  </button>
+  <button data-tab="chordlab" aria-label="Chord Lab">
+    <svg viewBox="0 0 24 24"><path d="M9 3h6M10 3v6l-5 9a2 2 0 0 0 2 3h10a2 2 0 0 0 2-3l-5-9V3"/></svg><span>Chord Lab</span>
+  </button>
+  <button data-tab="scalelab" aria-label="Scale Lab">
+    <svg viewBox="0 0 24 24"><path d="M2 12c2-7 4-7 6 0s4 7 6 0 4-7 6 0 2 3 2 0"/></svg><span>Scale Lab</span>
+  </button>
+  <button data-tab="settings" aria-label="Settings">
+    <svg viewBox="0 0 24 24"><path d="M4 7h9M17 7h3M4 17h3M11 17h9"/><circle cx="15" cy="7" r="2"/><circle cx="9" cy="17" r="2"/></svg><span>Settings</span>
+  </button>
+</nav>
+<script src="theory.js"></script>
+<script src="synth.js"></script>
+<script src="app.js"></script>
+<script src="library.js"></script>
+<script src="lab.js"></script>
+<script src="scalelab.js"></script>
+<script src="settings.js"></script>
+</body>
+</html>
